@@ -7,7 +7,10 @@ require linked_list.fs
 here DATA_SIZE LIST_SIZE list-reserve-memory
 dup DATA_SIZE LIST_SIZE * 2 + cells dump
 
-S" list should be initially empty"
-list-empty? true <> assert
+dup list-remaining-space LIST_SIZE =
+S" list should have initially all node space available" assert
+
+dup list-empty? true =
+S" list should be initially empty" assert
 
 .s cr

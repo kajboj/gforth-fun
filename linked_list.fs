@@ -9,11 +9,17 @@ S" linked list file" type cr
                       \   address of reserved address
   dup >r
   * cells
-  cell+               \ one cell for remaining space as number of nodes
-  cell+               \ one cell to point to the beginning of the list
-  allot               \ addr
-  dup r> swap !       \ first cell has remaining space
-  dup cell+ 0 swap ! ; \ second cell points to the first cell of the list
+  cell+                  \ one cell for remaining space as number of nodes
+  cell+                  \ one cell to point to the beginning of the list
+  allot                  \ addr
+  dup r> swap !          \ first cell has remaining space
+  dup cell+ nil swap ! ; \ second cell points to the first cell of the list
+
+: list-head ( addr -- u )
+  cell+ @ ;
+
+: list-remaining-space ( addr -- u )
+  @ ;
 
 : list-empty? ( addr -- f )
-  true ;
+  list-head nil = ;
