@@ -1,4 +1,8 @@
 256 Constant RANGE
+cell 1 chars + Constant CHAR_COUNT_CELL_SIZE
+
+: char-count-cells ( n -- n )
+  CHAR_COUNT_CELL_SIZE * ;
 
 : inc-char-count ( a b -- )
                  \ input:
@@ -6,7 +10,7 @@
                  \   character (byte)
                  \ side-effects:
                  \   increases char counter for a given char
-  cells +
+  char-count-cells +
   1 swap
   +! ;
 
@@ -25,10 +29,11 @@
   loop
   2drop ;
 
-\ could we use erase here?
-: zero-char-counts ( a -- )
+: init-char-counts ( a -- )
   RANGE 0 u+do
-    0 over i cells + !
+    dup 0 swap !
+    dup cell+ i swap c!
+    1 char-count-cells +
   loop
   drop ;
 
@@ -41,18 +46,12 @@ input-address !
 
 create char-counts RANGE cells allot
 
-: dump-char-counts ( -- )
-  char-counts RANGE cells dump ;
+char-counts init-char-counts
 
-: dump-input ( -- )
-  input-address input-length dump ;
-
-char-counts zero-char-counts
-
-char-counts
-input-address @
-input-length @
+  char-counts
+  input-address @
+  input-length @
 count-chars
 
-dump-char-counts
+char-counts RANGE char-count-cells dump
 .s cr
