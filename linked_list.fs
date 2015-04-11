@@ -85,6 +85,9 @@
   list-inc-counter ;           \ a1
 
 : list-ins ( a1 a2 -- )
+           \ head new-node
+  over @        \ a1 a2 a3
+  over cell+ !  \ a1 a2
   swap ! ;
 
 : list-display-rec ( a -- )

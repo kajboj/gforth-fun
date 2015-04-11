@@ -29,7 +29,7 @@ S" list is not full" assert
 dup list-remaining-space 3 =
 S" available space dropped by 1" assert
 
-\ after inserting new node
+\ after inserting one node
 
 list-get      \ l a h
 swap          \ l h a
@@ -38,6 +38,13 @@ list-ins      \ l a
 
 over list-head =
 S" added node is at the head" assert
+
+dup list-display
+                     \ l
+dup                  \ l l
+7 list-new           \ l a
+over list-get swap   \ l h a
+list-ins             \ l
 
 dup LIST_SIZE list-dump
 dup list-display
