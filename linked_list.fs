@@ -1,19 +1,26 @@
 S" linked list file" type cr
 
-: list-reserve-memory ( addr n n -- addr )
+2 Constant LIST_CONS_SIZE
+2 Constant LIST_METADATA_SIZE
+
+: nilify-cell ( addr - )
+              \ input:
+              \   address of the memory cell to be set to nil
+  nil swap ! ;
+
+: list-memory-size ( n -- n )
+  LIST_CONS_SIZE * LIST_METADATA_SIZE + cells ;
+
+: list-reserve-memory ( addr n -- addr )
                       \ input:
                       \   start address
-                      \   size of node data
                       \   number of nodes
                       \ output:
                       \   address of reserved address
-  dup >r
-  * cells
-  cell+                  \ one cell for remaining space as number of nodes
-  cell+                  \ one cell to point to the beginning of the list
-  allot                  \ addr
-  dup r> swap !          \ first cell has remaining space
-  dup cell+ nil swap ! ; \ second cell points to the first cell of the list
+  tuck                    \ n addr n
+  list-memory-size allot  \ n addr
+  swap over !             \ addr
+  dup cell+ nilify-cell ; \ second cell points to the first cell of the list
 
 : list-head ( addr -- u )
   cell+ @ ;
@@ -23,3 +30,6 @@ S" linked list file" type cr
 
 : list-empty? ( addr -- f )
   list-head nil = ;
+
+: list-dump ( addr n -- )
+  list-memory-size dump ;
