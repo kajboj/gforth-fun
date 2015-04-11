@@ -5,6 +5,8 @@ require linked_list.fs
 
 here LIST_SIZE list-init
 
+dup list-display
+
 dup list-remaining-space LIST_SIZE =
 S" list has initially all node space available" assert
 
@@ -17,7 +19,6 @@ S" list is not full" assert
 \ after allocating new node
 
 dup 13 list-new over
-dup LIST_SIZE list-dump
 
 dup list-empty? true =
 S" list is empty" assert
@@ -30,6 +31,14 @@ S" available space dropped by 1" assert
 
 \ after inserting new node
 
-\ S" added node is at the head" assert
+list-get      \ l a h
+swap          \ l h a
+tuck          \ l a h a
+list-ins      \ l a
 
+over list-head =
+S" added node is at the head" assert
+
+dup LIST_SIZE list-dump
+dup list-display
 .s cr

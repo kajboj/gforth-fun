@@ -8,75 +8,100 @@
 \   current number of allocated nodes
 \   head of the list
 
-: nilify-cell ( addr - )
+: nilify-cell ( a - )
   nil swap ! ;
 
-: zero-cell ( addr - )
+: zero-cell ( a - )
   nilify-cell ;
+
+: nil? ( a - f )
+  nil = ;
 
 : list-memory-size ( n -- n )
   LIST_CONS_SIZE * LIST_METADATA_SIZE + cells ;
 
-: list-counter ( addr -- addr1 )
+: list-counter ( a -- a1 )
   LIST_COUNT_OFFSET cells + ;
 
-: list-get ( addr -- addr1 )
+: list-get ( a -- a1 )
   LIST_HEAD_OFFSET cells + ;
 
-: list-init ( addr n -- addr )
+: list-init ( a n -- a )
             \ input:
             \   start address
             \   number of nodes
             \ output:
             \   address of reserved address
-  tuck                       \ n addr n
-  list-memory-size allot     \ n addr
-  tuck !                     \ addr
+  tuck                       \ n a n
+  list-memory-size allot     \ n a
+  tuck !                     \ a
   dup list-counter zero-cell \ node counter
   dup list-get nilify-cell ; \ head of the list
 
-: list-head ( addr -- addr1 )
+: list-head ( a -- a1 )
   list-get @ ;
 
-: list-node-count ( addr -- u )
+: list-node-count ( a -- u )
   list-counter @ ;
 
-: list-remaining-space ( addr -- u )
+: list-remaining-space ( a -- u )
   @ ;
 
-: list-empty? ( addr -- f )
+: list-empty? ( a -- f )
   list-head nil = ;
 
-: list-full? ( addr -- f )
+: list-full? ( a -- f )
   list-remaining-space 0 = ;
 
-: list-dump ( addr n -- )
+: list-dump ( a n -- )
   list-memory-size dump cr ;
 
-: list-first-empty ( addr -- addr1 )
+: list-first-empty ( a -- a1 )
   dup list-node-count LIST_CONS_SIZE *
   LIST_METADATA_SIZE + cells + ;
 
-: list-init-cons ( n addr -- )
+: list-init-cons ( n a -- )
   tuck ! cell+ nilify-cell ;
 
-: list-dec-remaining-space ( addr -- )
+: list-dec-remaining-space ( a -- )
   dup @ 1- swap ! ;
 
-: list-inc-counter ( addr -- )
+: list-inc-counter ( a -- )
   list-counter dup @ 1+ swap ! ;
 
-: list-new ( addr n -- addr )
+: list-new ( a n -- a )
            \ input:
            \   address of the list
            \   payload of the new node
            \ output:
            \   address of the new allocated node
-  over                         \ addr n addr
-  list-first-empty             \ addr n addr1
-  tuck                         \ addr addr1 n addr1
-  list-init-cons               \ addr addr1
-  swap                         \ addr1 addr
-  dup                          \ addr1 addr addr
-  list-dec-remaining-space     \ addr1 addr
-  list-inc-counter ;           \ addr1
+  over                         \ a n a
+  list-first-empty             \ a n a1
+  tuck                         \ a a1 n a1
+  list-init-cons               \ a a1
+  swap                         \ a1 a
+  dup                          \ a1 a a
+  list-dec-remaining-space     \ a1 a
+  list-inc-counter ;           \ a1
+
+: list-ins ( a1 a2 -- )
+  swap ! ;
+
+: list-display-rec ( a -- )
+  dup nil? if
+    drop S" nil" type
+  else
+    dup
+    @ .
+    cell+ @ recurse
+  endif ;
+
+: list-display-sep ( -- )
+  S" | " type ;
+
+: list-display ( a -- )
+  dup list-remaining-space . list-display-sep
+  dup list-node-count . list-display-sep
+  list-head
+  list-display-rec
+  cr ;
