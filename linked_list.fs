@@ -108,3 +108,7 @@
   list-head
   list-display-rec
   cr ;
+
+: list-tail ( a1 -- a2 )
+  cell+ ;
+

@@ -44,8 +44,16 @@ dup list-display
 dup                  \ l l
 7 list-new           \ l a
 over list-get swap   \ l h a
-list-ins             \ l
+tuck                 \ l a h a
+list-ins             \ l a
+over                 \ l a l
 
-dup LIST_SIZE list-dump
-dup list-display
+list-display         \ l a
+
+list-tail
+over 27 list-new     \ l a b
+list-ins
+list-display
+
+\ dup LIST_SIZE list-dump
 .s cr
